@@ -4,7 +4,9 @@ const mongoose = require('mongoose')
 
 const app = express()
 
-const registerRouter = require('./routes/register')
+const registerRouter = require('./server/routes/register')
+
+const authenticationRouter = require('./server/routes/auth')
 
 const PORT = 8000
 
@@ -16,7 +18,11 @@ app.get('/',(req,res) => {
     res.send("This is the homepage")
 })
 
+app.use(express.json())
+
 app.use("/register", registerRouter)
+
+app.use('/authentication',authenticationRouter)
 
 app.listen(
     PORT,

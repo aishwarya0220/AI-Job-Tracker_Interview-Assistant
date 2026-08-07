@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: [true, 'username is required'],
-        trim: true
+        trim: true,
     }, 
 
     email: {
@@ -12,17 +12,15 @@ const userSchema = new mongoose.Schema({
         unique: [true, 'email is required'],
         lowercase: true,
         trim: true,
-        match: [[/^\S+@\S+\.\S+$/, 'Please enter a valid email address']]
-    },
-
-    birthdate: {
-        type: Date
+        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
+        required: true
     },
 
     password: {
         type: String,
         required: true,
         trim: true
+
     }
  }, {
         timestamps: true
@@ -30,4 +28,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema)
 
-export default User
+module.exports = User
