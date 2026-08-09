@@ -20,3 +20,21 @@ Schema defines the structure and rules of your data, while a Model provides the 
 
 In app.get() every route is situated in a single file (eg. index.js) but express router()/router.get() breaks the project into each component thereby providing modularity. eg. userRouter, productRouter
 
+
+Day - 3 --
+
+
+JWT generation & User management.
+
+Routing register and auth
+
+Testing APIs using postman (register, authentication). learning JWT and verifying using bcrypt.compare()
+
+
+Day - 4 --
+
+Authentication & Protected Routes 
+
+JWT verification by jwt.verify(). authorization: bearer token and req.header.authorization for authenticating valid user
+
+Middleware 

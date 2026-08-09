@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 const jwtSecret = process.env.JWT_SECRET
-console.log(process.env.JWT_SECRET)
 
 const bcrypt = require('bcryptjs')
 
@@ -47,7 +46,7 @@ const login = router.post('/', async (req, res) => {
             jwtSecret,
             {expiresIn: '7d'}
         )
-        res.json( {token} )
+        res.status(200).json( {token} )
     }
 
 
