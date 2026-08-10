@@ -38,3 +38,10 @@ Authentication & Protected Routes
 JWT verification by jwt.verify(). authorization: bearer token and req.header.authorization for authenticating valid user
 
 Middleware 
+
+
+Day - 5 --
+
+Job Schema & Fetching Job applications
+
+Jobs post and get routers. User can get(middleware prtoected) only the jobs he has posted {req.user.id}. Added _id to JWT payload for linking user and jobs via MongoDB ref

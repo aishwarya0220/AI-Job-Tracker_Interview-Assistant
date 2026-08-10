@@ -8,7 +8,7 @@ const registerRouter = require('./server/routes/register')
 
 const authenticationRouter = require('./server/routes/auth')
 
-const profile = require('./server/routes/profile')
+const jobsRouter = require('./server/routes/jobs')
 
 const PORT = 8000
 
@@ -26,7 +26,7 @@ app.use("/register", registerRouter)
 
 app.use('/authentication',authenticationRouter)
 
-app.use('/profile', profile)
+app.use('/jobs', jobsRouter)
 
 app.listen(
     PORT,

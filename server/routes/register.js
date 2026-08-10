@@ -12,16 +12,26 @@ const register = router.post('/', async (req,res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        await User.create({
+        const existingUser = await User.findOne({
+            $or: [
+                {username: username},
+                {email: email}
+            ]
+        })
+
+        if(existingUser){
+            return res.status(409).json('User already exists')
+        }
+
+        const user = await User.create({
             username,
             email,
             password: hashedPassword
         })
 
-        await User.save()
-
-        res.status(210).json({
-            message: "User registered successfully"
+        res.status(201).json({
+            message: "Registration successful",
+            user
         })
     } catch(err) {
     res.status(500).json({ error: err.message})

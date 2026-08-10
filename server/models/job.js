@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const User = require('./user')
 
-const jobsSchema = new mongoose.model({
+const jobsSchema = new mongoose.Schema({
     company: {
         type: String,
         required: true,
@@ -34,7 +34,7 @@ const jobsSchema = new mongoose.model({
         ref: 'User',
         required: true
     }
-},{
+}, {
         timestamps: true
 })
 
