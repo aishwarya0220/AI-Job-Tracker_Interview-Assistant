@@ -22,7 +22,8 @@ const jobsSchema = new mongoose.Schema({
 
     jobDescription: {
         type: String,
-        default: ""
+        default: "",
+        required: [true, 'Required for AI based learning features']
     },
 
     notes: {
@@ -33,7 +34,20 @@ const jobsSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+
+    interviewQuestions: [
+        {
+            question: {
+                type: String,
+                required: true
+            },
+            userAnswers: {
+                type: String,
+                default: ''
+            }
+        }
+    ]
 }, {
         timestamps: true
 })

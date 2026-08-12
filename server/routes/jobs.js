@@ -6,6 +6,8 @@ const router = express.Router()
 
 const Job = require('../models/job')
 
+const { generateInterviewQuestions } = require('../utils/aiService')
+
 const jobs = router.post('/', authenticationToken, async (req, res) => {
     try{
         const {company, position, status, jobDescription, notes} = req.body
@@ -86,6 +88,26 @@ const deleteJob = router.delete('/:id', authenticationToken, async (req, res) =>
             res.status(403).json('Not authorized')
     }
 
+    } catch(err){
+        res.status(500).json({error: err.message})
+    }
+})
+
+const interviewPrep = router.post('/:id/interview-prep', authenticationToken, async (req, res) => {
+    try{
+        const job = await Job.findById(req.params.id)
+
+        if(!job){
+            return res.status(404).json('Job not found')
+        }
+
+        if(job.user.toString() == req.user.id){
+            const response = await generateInterviewQuestions(job.jobDescription)
+
+            res.status(200).json(response)
+        }
+
+        
     } catch(err){
         res.status(500).json({error: err.message})
     }
