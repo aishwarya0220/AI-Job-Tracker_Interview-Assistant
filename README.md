@@ -45,3 +45,21 @@ Day - 5 --
 Job Schema & Fetching Job applications
 
 Jobs post and get routers. User can get(middleware prtoected) only the jobs he has posted {req.user.id}. Added _id to JWT payload for linking user and jobs via MongoDB ref
+
+
+Day - 6 --
+
+Finished entire CRUD backend specific to /:id endpoint.
+
+
+Day - 7 --
+
+Setup AI SDK(Gemini). Built utility function for responses.
+
+Linked with MongoDB and Express to generate interview questions based on user jobs data.
+
+Questions asked are saved to DB so that client can attempt later
+
+
+Day - 8 --
+

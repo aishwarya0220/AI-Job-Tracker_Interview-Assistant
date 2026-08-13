@@ -102,13 +102,39 @@ const interviewPrep = router.post('/:id/interview-prep', authenticationToken, as
         }
 
         if(job.user.toString() == req.user.id){
-            const response = await generateInterviewQuestions(job.jobDescription)
+            const response = await generateInterviewQuestions(
+                job.company,
+                job.position,
+                job.jobDescription  
+                )
 
-            res.status(200).json(response)
+            job.interviewQuestions = response
+
+            await job.save()
+
+            res.status(200).json({ question: response})
         }
 
         
     } catch(err){
+        res.status(500).json({error: err.message})
+    }
+})
+
+const getSavedQuestions = router.get('/:id/interview-prep', authenticationToken, async (req, res) => {
+    try{
+    const job = await Job.findById(req.params.id)
+
+    if(!job){
+        return res.status(404).json('Job not found') 
+    }
+
+    if(job.user.toString() == req.user.id){
+        
+        res.status(200).json(job.interviewQuestions)
+    }
+
+    } catch(err) {
         res.status(500).json({error: err.message})
     }
 })
