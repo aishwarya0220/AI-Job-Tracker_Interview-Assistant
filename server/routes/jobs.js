@@ -129,9 +129,14 @@ const getSavedQuestions = router.get('/:id/interview-prep', authenticationToken,
         return res.status(404).json('Job not found') 
     }
 
+    const questions = job.interviewQuestions.map(item => ({
+        question: item.question
+    }))
+    
+
     if(job.user.toString() == req.user.id){
         
-        res.status(200).json(job.interviewQuestions)
+        res.status(200).json(questions)
     }
 
     } catch(err) {
