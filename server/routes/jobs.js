@@ -59,8 +59,8 @@ const updateJob = router.put('/:id', authenticationToken, async (req, res) => {
                 update})
         }
 
-        if(!job.user.toString() == req.user.id){
-            res.status(403).json('Not authorized to update this job')
+        if(job.user.toString() !== req.user.id){
+            return res.status(403).json('Not authorized to update this job')
         }
         
 
@@ -85,7 +85,7 @@ const deleteJob = router.delete('/:id', authenticationToken, async (req, res) =>
     }
 
     if(job.user.toString() !== req.user.id){
-            res.status(403).json('Not authorized')
+        return res.status(403).json('Not authorized')
     }
 
     } catch(err){
@@ -99,6 +99,10 @@ const interviewPrep = router.post('/:id/interview-prep', authenticationToken, as
 
         if(!job){
             return res.status(404).json('Job not found')
+        }
+
+        if(job.user.toString() !== req.user.id){
+            return res.status(401).json('Unauthorized')
         }
 
         if(job.user.toString() == req.user.id){

@@ -4,6 +4,8 @@ const mongoose = require('mongoose')
 
 const app = express()
 
+const cors = require('cors')
+
 const registerRouter = require('./server/routes/register')
 
 const authenticationRouter = require('./server/routes/auth')
@@ -11,6 +13,8 @@ const authenticationRouter = require('./server/routes/auth')
 const jobsRouter = require('./server/routes/jobs')
 
 const PORT = 8000
+
+const cookieParser = require('cookie-parser')
 
 mongoose.connect("mongodb://127.0.0.1:27017/mydatabase")
     .then(() => console.log("Connected"))
@@ -21,6 +25,13 @@ app.get('/',(req,res) => {
 })
 
 app.use(express.json())
+
+app.use(cookieParser())
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}))
 
 app.use("/register", registerRouter)
 

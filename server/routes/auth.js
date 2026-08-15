@@ -38,22 +38,32 @@ const login = router.post('/', async (req, res) => {
         })
     }
 
-    if(validPassword){
-        const token = jwt.sign(
-            {
-                id: user._id,
-                username: user.username,
-            },
-            jwtSecret,
-            {expiresIn: '7d'}
-        )
-        res.status(200).json( {token} )
-    }
+    const token = jwt.sign(
+        {
+            id: user._id,
+            username: user.username,
+        },
+        jwtSecret,
+        {expiresIn: '7d'}
+    )
+    res.cookie('token', token,{
+        httpOnly: true,
+        secure: false,
+        // sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    })
+
+    res.status(200).json({ message: 'Login Successful'})
 
 
 } catch(err){
     res.status(500).json({error: err.message})
 }
+})
+
+const logOut = router.post('/logout', (req, res) => {
+    res.clearCookie('token')
+    return res.status(200).json( {message: 'Logged out successfully'} )
 })
 
 module.exports = login

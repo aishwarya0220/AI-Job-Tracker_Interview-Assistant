@@ -63,3 +63,11 @@ Questions asked are saved to DB so that client can attempt later
 
 Day - 8 --
 
+Installed frontend dependencies. Helper function for fetching API requests
+
+
+Day - 9 --
+
+Shifted architecture from localStorage based JWT authentication to httpOnly cookie based authentication.
+
+origin = combination of protocol + domain + port and thus CORS become relevant. Switched from JSX to TSX.
