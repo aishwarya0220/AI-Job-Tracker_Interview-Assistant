@@ -71,3 +71,8 @@ Day - 9 --
 Shifted architecture from localStorage based JWT authentication to httpOnly cookie based authentication.
 
 origin = combination of protocol + domain + port and thus CORS become relevant. Switched from JSX to TSX.
+
+
+Day - 10 --
+
+Made apiHelper() dynamic as per http requests (default = GET) . Configured and connected register page(React-state) with backend (Initially issues with connection b/w back and frontend due to difference in their ports). Started tailwind.
