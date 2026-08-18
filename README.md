@@ -76,3 +76,10 @@ origin = combination of protocol + domain + port and thus CORS become relevant. 
 Day - 10 --
 
 Made apiHelper() dynamic as per http requests (default = GET) . Configured and connected register page(React-state) with backend (Initially issues with connection b/w back and frontend due to difference in their ports). Started tailwind.
+
+
+Day - 11 --
+
+Imported jsx components from shadcn/ui. Faced framework and aliases issues.
+
+Built register UI referring to a design on figma using tailwind
