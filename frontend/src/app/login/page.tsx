@@ -4,29 +4,23 @@ import Image from "next/image"
 
 import registerImg from "@/Register-photo.png"
 
-import { ArrowUpIcon } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
+
 import { Input } from "@/components/ui/input"
 
-
 import Link from "next/link"
+
+import { useRouter } from "next/navigation"
 
 import { useState } from "react"
 
 import apiRequest from "../utils/api"
 
-export default function RegisterPage(){
+export default function LoginPage(){
 
-    const [username, setUsername] = useState("")
+    const router = useRouter()
 
-    const [email, setEmail] = useState("")
+    const [login, setLogin] = useState("")
 
     const [password, setPassword] = useState("")
 
@@ -34,17 +28,17 @@ export default function RegisterPage(){
         event.preventDefault()
 
         const data = {
-            username: username,
-            email: email,
+            login: login,
             password: password
         }
 
         const response = await apiRequest(
-            'http://localhost:8000/register',
+            'http://localhost:8000/login',
             'POST',
             data
         )
-
+        
+        router.push('/dashboard')
         console.log(response)
     }
 
@@ -55,36 +49,22 @@ export default function RegisterPage(){
             <div className="flex h-screen overflow-hidden w-full" >      
                 {/* left container */}
                 <div className="flex h-screen flex-col items-baseline justify-center w-1/2 ml-43.75 gap-7.5">
-                    <h1 className="mb-10 text-[24px]">Get Started Now</h1>
+                    <h1 className="mb-10 text-[24px]">Sign in</h1>
                     {/* Username */}
                     <div className="w-101"
                     
                     >
-                    <p className="ml-2 text-[14px]">Username</p>
+                    <p className="ml-2 text-[14px]">Login ID</p>
                     <Input
                         className="w-full"
                         type="text"
-                        placeholder="Enter Username"
+                        placeholder="Enter Username or Email"
                         onChange={(event) => {
-                            setUsername(event.target.value)
+                            setLogin(event.target.value)
                         }}
                     />
                     </div>
                         {/* email */}
-                    <div className="w-101"
-                    
-                    >
-                    <p className="ml-2 text-[14px]">Email</p>
-                    <Input
-                        className="w-full"
-                        type="text"
-                        placeholder="Enter Email"
-                        onChange={(event) => {
-                            setEmail(event.target.value)
-                        }}
-                    />
-                    </div>
-
                     <div className="w-101"
                     
                     >
@@ -100,11 +80,11 @@ export default function RegisterPage(){
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 md:flex-row">
-                        <Button type="submit" variant="outline" className="w-102 bg-green-800 transition-colors duration-300 ease-in-out hover:bg-green-900 hover:text-white text-amber-50 h-9">Signup</Button>
+                        <Button type="submit" variant="outline" className="w-102 bg-green-800 transition-colors duration-300 ease-in-out hover:bg-green-900 hover:text-white text-amber-50 h-9">Login</Button>
                     </div>
 
                     <div className="flex justify-center items-center align-middle">
-                        <p>Have an account? <Link href="/login" className="text-blue-600">Sign in</Link></p>
+                        <p>Don't have an account? <Link href="/" className="text-blue-600">Sign up</Link></p>
                     </div>
                 </div>
                     {/* right container */}

@@ -14,7 +14,11 @@ const jobsRouter = require('./server/routes/jobs')
 
 const PORT = 8000
 
+const logOut = require('./server/routes/logout')
+
 const cookieParser = require('cookie-parser')
+
+const userRoutes = require('./server/routes/user')
 
 mongoose.connect("mongodb://127.0.0.1:27017/mydatabase")
     .then(() => console.log("Connected"))
@@ -35,9 +39,13 @@ app.use(cors({
 
 app.use("/register", registerRouter)
 
-app.use('/authentication',authenticationRouter)
+app.use('/login',authenticationRouter)
 
 app.use('/jobs', jobsRouter)
+
+app.use('/user', userRoutes)
+
+app.use('/logout', logOut)
 
 app.listen(
     PORT,
