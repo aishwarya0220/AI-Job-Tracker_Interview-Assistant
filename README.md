@@ -83,3 +83,10 @@ Day - 11 --
 Imported jsx components from shadcn/ui. Faced framework and aliases issues.
 
 Built register UI referring to a design on figma using tailwind
+
+
+Day - 12 --
+
+Planned dashboard.tsx and kanban.tsx. endpoint for logout which resets cookie rather simply router.push('/login')
+
+Dashboard Navbar
