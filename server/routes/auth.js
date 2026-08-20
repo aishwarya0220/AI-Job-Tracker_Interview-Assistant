@@ -49,7 +49,8 @@ const login = router.post('/', async (req, res) => {
     res.cookie('token', token,{
         httpOnly: true,
         secure: false,
-        // sameSite: 'strict',
+        path: '/',
+        // sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
 

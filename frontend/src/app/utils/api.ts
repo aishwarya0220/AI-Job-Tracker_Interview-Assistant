@@ -8,7 +8,7 @@ const apiRequest = async (url: string, method = 'GET', data = null) => {
         headers: { 'Content-Type': 'application/json'}
     }
 
-    if(method.toUpperCase() !== 'GET'){
+    if(data !== null && method.toUpperCase() !== 'GET'){
         options.body = JSON.stringify(data)
     }
 

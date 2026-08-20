@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react"
 
+import { Job } from "@/types"
+
+import JobCard from "@/components/jobCard"
+
+import { Button } from "@/components/ui/button"
+
 import {
     Avatar,
     AvatarFallback,
@@ -16,6 +22,24 @@ import { useRouter } from "next/navigation"
 
 export default function Dashboard(){
     const router = useRouter()
+
+    const [jobs, setJobs] = useState<Job[]>([])
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        fetchJobs()
+    },[])
+
+    const fetchJobs = async () => {
+        try{
+            const data = await apiRequest<Job[]>('http://localhost:8000/jobs')
+        } catch(err){
+
+        }
+    }
 
     const handleLogout = async () => {
         try{
@@ -44,7 +68,13 @@ export default function Dashboard(){
 
     },[])
     return (
-        <nav className="flex mt-4 justify-end gap-3 mr-4">
+        <div className="min-h-screen">
+        <nav className="justify-between flex bg-blue-950 h-11 items-center">
+            <div>
+                <h1 className="ml-4 text-2xl text-amber-100">Your Applications</h1>
+            </div>
+
+            <div className="gap-3 mr-4 flex justify-end">
             <div>
             <Avatar>
             <AvatarImage
@@ -56,13 +86,51 @@ export default function Dashboard(){
             </Avatar>
             </div>
 
-            <p className="text-[19px]">{username}</p>
+            <p className="text-[19px] text-amber-100">{username}</p>
 
             <div>
-                <Button type="button" onClick={handleLogout}>Logout</Button>
+                <Button type="button" className="bg-blue-900 border-amber-100 " onClick={handleLogout}>Logout</Button>
+            </div>
             </div>
 
 
         </nav>
+
+        {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-2xl font-bold">Track status and generate interview questions</h2>
+          </div>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold rounded-lg shadow-lg shadow-blue-600/20 transition text-sm"
+          >
+            + Add New Job
+          </button>
+        </div>
+
+        {/* loading / empty states */}
+        {loading ? (
+            <div className="text-center py-20 text-slate-500">Loading your applications..."></div>
+        ) : jobs.length == 0 ? (
+            <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <p className="text-slate-400 mb-4">No jobs added yet</p>
+                <Button
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="text-blue-400 hover:underline font-semibold text-sm"
+                >Add your first job application
+                </Button>
+            </div>
+        ) : (
+            <div>
+                {jobs.map((job) => (
+                    <JobCard key={job._id} job={job} onJobUpdated={fetchJobs}
+                ))}
+            </div>
+            </main>
+        )
+        )}
+        </div>
     )
 }

@@ -28,14 +28,14 @@ app.get('/',(req,res) => {
     res.send("This is the homepage")
 })
 
-app.use(express.json())
-
-app.use(cookieParser())
-
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
 }))
+
+app.use(express.json())
+
+app.use(cookieParser())
 
 app.use("/register", registerRouter)
 

@@ -83,3 +83,8 @@ Day - 11 --
 Imported jsx components from shadcn/ui. Faced framework and aliases issues.
 
 Built register UI referring to a design on figma using tailwind
+
+
+Day - 12 --
+
+Worked on dashboard jobsCard component and basic structuring of the layout.
