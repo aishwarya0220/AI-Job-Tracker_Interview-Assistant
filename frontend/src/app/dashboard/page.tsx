@@ -4,9 +4,9 @@ import { useEffect, useState } from "react"
 
 import { Job } from "@/types"
 
-import JobCard from "@/components/jobCard"
+import AddJobModal from "@/components/jobModal"
 
-import { Button } from "@/components/ui/button"
+import JobCard from "@/components/JobCard"
 
 import {
     Avatar,
@@ -35,9 +35,15 @@ export default function Dashboard(){
 
     const fetchJobs = async () => {
         try{
+            setLoading(true)
+            console.log('fetching jobs..')
             const data = await apiRequest<Job[]>('http://localhost:8000/jobs')
+            console.log('jobs received', data)
+            setJobs(data)
         } catch(err){
-
+            console.error('Failed to fetch jobs', err)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -110,27 +116,39 @@ export default function Dashboard(){
           </button>
         </div>
 
-        {/* loading / empty states */}
+            {/* Loading / Empty States */}
         {loading ? (
-            <div className="text-center py-20 text-slate-500">Loading your applications..."></div>
-        ) : jobs.length == 0 ? (
-            <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <p className="text-slate-400 mb-4">No jobs added yet</p>
-                <Button
+                <div className="text-center py-20 text-slate-500">Loading your applications...</div>
+                ) : jobs.length === 0 ? (
+                <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800">
+                    <p className="text-slate-400 mb-4">No jobs added yet.</p>
+                    <button
                     onClick={() => setIsAddModalOpen(true)}
                     className="text-blue-400 hover:underline font-semibold text-sm"
-                >Add your first job application
-                </Button>
-            </div>
-        ) : (
-            <div>
-                {jobs.map((job) => (
-                    <JobCard key={job._id} job={job} onJobUpdated={fetchJobs}
-                ))}
-            </div>
+                    >
+                    Add your first job application
+                    </button>
+                </div>
+                ) : (
+                /* Job Grid */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {jobs.map((job) => (
+                    <JobCard key={job._id} job={job} onJobUpdated={fetchJobs} />
+                    ))}
+                </div>
+                )}
             </main>
-        )
-        )}
-        </div>
-    )
-}
+
+            {/* Add Job Modal */}
+            {isAddModalOpen && (
+                <AddJobModal
+                onClose={() => setIsAddModalOpen(false)}
+                onJobAdded={() => {
+                    setIsAddModalOpen(false);
+                    fetchJobs();
+                }}
+                />
+            )} 
+            </div>
+        );
+        }

@@ -92,3 +92,25 @@ Worked on dashboard jobsCard component and basic structuring of the layout.
 Planned dashboard.tsx and kanban.tsx. Endpoint for logout which resets cookie rather than simply using router.push('/login').
 
 Dashboard Navbar
+
+
+Day - 13 --
+
+Created jobCard and addJobModal. fetched jobs and displayed on dashboard.
+
+
+
+
+
+
+
+
+Issues faced -- 
+
+localStorage to cookie based transitioning and reconfig of endpoints.
+
+Git broken local reference (origin/HEAD) - removed older ref and added new and set it as main
+
+Git diverged & associated merge conflict (updates to readme.md) - 
+
+CORS for accessing 'api/logout' bcoz options didnt match clearCookies() options - app.use(cors) placement 

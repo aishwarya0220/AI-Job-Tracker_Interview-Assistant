@@ -1,6 +1,6 @@
 
 
-const apiRequest = async (url: string, method = 'GET', data = null) => {
+const apiRequest = async <T>(url: string, method = 'GET', data = null):Promise<T> => {
     
     const options: RequestInit = {
         method: method.toUpperCase(),

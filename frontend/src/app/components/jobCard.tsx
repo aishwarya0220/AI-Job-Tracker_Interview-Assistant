@@ -39,7 +39,7 @@ export default function JobCard({ job, onJobUpdated, onPrepareForInterview}: Job
 
         setIsDeleting(true)
         try{
-            await apiRequest(`http://localhost:8000/jobs/${job._id}`, 'DELELTE')
+            await apiRequest(`http://localhost:8000/jobs/${job._id}`, 'DELETE')
             if(onJobUpdated) onJobUpdated()
         }catch(err){
             console.log('Failed to delete job', err)
@@ -66,7 +66,42 @@ export default function JobCard({ job, onJobUpdated, onPrepareForInterview}: Job
             {isDeleting ? '...' : '✕'}
           </button>
         </div>
+
+        <div className="">
+            <select
+                value={job.status}
+                disabled={isUpdating}
+                onChange={(e) => {
+                    handleStatusChange(e.target.value as Job['status'])
+                }}
+                className={`${statusStyles || statusStyles.Applied},text-xs font-semibold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition`}
+            >
+                <option value="Applied">
+                    Applied
+                </option>
+                <option value="Interviewing">
+                    Interviewing
+                </option>
+                <option value="Offered">
+                    Offered
+                </option>
+                <option value="Rejected">
+                    Rejected
+                </option>
+            </select>
         </div>
+        
+        {job.jobDescription && (
+            <p className="text-xs text-slate-400 line-clamp-3 mb-4 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800/60 font-mono">
+                {job.jobDescription}
+            </p>
+        )}
+        </div>
+        <button 
+            onClick={() => onPrepareForInterview && onPrepareForInterview()}
+        >
+            Get Questions
+        </button>
         </div>
     )
 }
