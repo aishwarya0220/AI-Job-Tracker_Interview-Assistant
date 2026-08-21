@@ -88,3 +88,7 @@ Built register UI referring to a design on figma using tailwind
 Day - 12 --
 
 Worked on dashboard jobsCard component and basic structuring of the layout.
+
+Planned dashboard.tsx and kanban.tsx. Endpoint for logout which resets cookie rather than simply using router.push('/login').
+
+Dashboard Navbar
