@@ -12,13 +12,13 @@ interface AddJobModalProps {
 export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
     const [company, setCompany] = useState('')
     const [position, setPosition] = useState('')
-    const [status, setStatus] = useState('')
+    const [status, setStatus] = useState<Job['status']>('Applied')
     const [jobDescription, setJobDescription] = useState('')
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const handleSumbit = async (e: SubmitEvent) => {
+    const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault()
         setError(null)
 
@@ -68,7 +68,7 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
                 )}
 
                 {/* Form */}
-                <form onSubmit={handleSumbit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                     <label className="block text-xs font-semibold uppercase mb-1 text-slate-400 ">
                         Company name
@@ -105,9 +105,9 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
                         className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="Applied">Applied</option>
-                        <option value="Interviewing">Applied</option>
-                        <option value="Offered">Applied</option>
-                        <option value="Rejected">Applied</option>
+                        <option value="Interviewing">Interviewing</option>
+                        <option value="Offered">Offered</option>
+                        <option value="Rejected">Rejected</option>
                     </select>
                     </div>
 

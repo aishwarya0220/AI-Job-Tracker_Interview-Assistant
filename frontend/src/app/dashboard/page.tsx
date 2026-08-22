@@ -8,6 +8,8 @@ import AddJobModal from "@/components/jobModal"
 
 import JobCard from "@/components/JobCard"
 
+import interviewModal from "@/components/InterviewModal"
+
 import {
     Avatar,
     AvatarFallback,
@@ -21,6 +23,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 
 export default function Dashboard(){
+
     const router = useRouter()
 
     const [jobs, setJobs] = useState<Job[]>([])
@@ -28,6 +31,8 @@ export default function Dashboard(){
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
     const [loading, setLoading] = useState(true)
+
+    const [selectedJobForInterview, setSelectedJobForInterview] = useState<Job | null>(null)
 
     useEffect(() => {
         fetchJobs()
@@ -133,10 +138,16 @@ export default function Dashboard(){
                 /* Job Grid */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {jobs.map((job) => (
-                    <JobCard key={job._id} job={job} onJobUpdated={fetchJobs} />
+                    <JobCard key={job._id}
+                        job={job} 
+                        onJobUpdated={fetchJobs} 
+                        onPrepareForInterview={() => setSelectedJobForInterview(job)}
+                    />
                     ))}
                 </div>
                 )}
+
+                {/* Interview modal */}
             </main>
 
             {/* Add Job Modal */}

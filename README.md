@@ -99,6 +99,10 @@ Day - 13 --
 Created jobCard and addJobModal. fetched jobs and displayed on dashboard.
 
 
+Day - 14 --
+
+Decision for hybrid approach to setoff token inflation. Implemented interviewModal
+
 
 
 
@@ -114,3 +118,13 @@ Git broken local reference (origin/HEAD) - removed older ref and added new and s
 Git diverged & associated merge conflict (updates to readme.md) - 
 
 CORS for accessing 'api/logout' bcoz options didnt match clearCookies() options - app.use(cors) placement 
+
+
+
+Decisions made --
+
+
+localStorage vs httpOnly -> Picked httpOnly (XSS proof; configd to make CSRF proof)
+
+Token inflation -- Sliding window truncation vs Thread isolation. -> Picked Hybrid(more token efficient per se input and output)
+

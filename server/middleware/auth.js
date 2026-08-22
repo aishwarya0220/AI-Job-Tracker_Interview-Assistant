@@ -10,7 +10,7 @@ const authenticationToken = ((req, res, next) => {
     const token = req.cookies.token
 
     if(!token){
-        res.status(401).json({message: 'Access denied: No token provided'})
+        return res.status(401).json({message: 'Access denied: No token provided'})
     }
 
     const decodedPayload = jwt.verify(token, process.env.JWT_SECRET)

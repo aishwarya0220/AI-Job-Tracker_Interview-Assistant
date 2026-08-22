@@ -26,6 +26,7 @@ const jobs = router.post('/', authenticationToken, async (req, res) => {
             job
         })
     } catch(err){
+        console.log('CREATE JOB ERROR', err)
         res.status(500).json({error: err.message})
     }
 })

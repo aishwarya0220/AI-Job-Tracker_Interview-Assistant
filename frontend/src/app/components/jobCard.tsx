@@ -74,7 +74,7 @@ export default function JobCard({ job, onJobUpdated, onPrepareForInterview}: Job
                 onChange={(e) => {
                     handleStatusChange(e.target.value as Job['status'])
                 }}
-                className={`${statusStyles || statusStyles.Applied},text-xs font-semibold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition`}
+                className={`${statusStyles[job.status]} text-xs font-semibold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition`}
             >
                 <option value="Applied">
                     Applied
@@ -97,7 +97,8 @@ export default function JobCard({ job, onJobUpdated, onPrepareForInterview}: Job
             </p>
         )}
         </div>
-        <button 
+        <button
+            className="text-amber-50"
             onClick={() => onPrepareForInterview && onPrepareForInterview()}
         >
             Get Questions
