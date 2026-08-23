@@ -101,10 +101,12 @@ Created jobCard and addJobModal. fetched jobs and displayed on dashboard.
 
 Day - 14 --
 
-Decision for hybrid approach to setoff token inflation. Implemented interviewModal
+Decision for hybrid approach to prevent token inflation. Implemented interviewModal
 
 
+Day - 15 --
 
+Finished design of InterviewModal. Linked with interview-prep 'POST' and 'GET'
 
 
 

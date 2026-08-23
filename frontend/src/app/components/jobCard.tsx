@@ -7,7 +7,7 @@ import apiRequest from "@/utils/api";
 interface JobCardProps {
     job: Job,
     onJobUpdated?: () => void,
-    onPrepareForInterview?: (job:Job) => void
+    onPrepareForInterview?: () => void
 }
 
 export default function JobCard({ job, onJobUpdated, onPrepareForInterview}: JobCardProps){
@@ -49,7 +49,7 @@ export default function JobCard({ job, onJobUpdated, onPrepareForInterview}: Job
     }
 
     return (
-        <div className="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-5 flex flex-col justify-between shadow-lg transition duration-200">
+        <div className="bg-slate-800 border border-slate-700 hover:border-slate-700 rounded-xl p-5 flex flex-col justify-between shadow-lg transition duration-200">
             <div>
         {/* Header: Company Name & Delete Button */}
         <div className="flex justify-between items-start mb-2">
@@ -99,7 +99,7 @@ export default function JobCard({ job, onJobUpdated, onPrepareForInterview}: Job
         </div>
         <button
             className="text-amber-50"
-            onClick={() => onPrepareForInterview && onPrepareForInterview()}
+            onClick={onPrepareForInterview}
         >
             Get Questions
         </button>

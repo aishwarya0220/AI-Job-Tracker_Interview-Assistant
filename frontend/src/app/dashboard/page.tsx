@@ -8,7 +8,7 @@ import AddJobModal from "@/components/jobModal"
 
 import JobCard from "@/components/JobCard"
 
-import interviewModal from "@/components/InterviewModal"
+import InterviewModal from "@/components/InterviewModal"
 
 import {
     Avatar,
@@ -147,7 +147,12 @@ export default function Dashboard(){
                 </div>
                 )}
 
-                {/* Interview modal */}
+                {selectedJobForInterview && (
+                    <InterviewModal
+                        job={selectedJobForInterview}
+                        onClose={() => setSelectedJobForInterview(null)}
+                    />
+                )}
             </main>
 
             {/* Add Job Modal */}
