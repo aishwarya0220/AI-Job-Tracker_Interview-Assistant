@@ -14,17 +14,29 @@ const apiRequest = async <T>(url: string, method = 'GET', data = null):Promise<T
 
     const response = await fetch(url, options)
 
-    
-    const jsonResponse = await response.json()
+    const contentType = response.headers.get('content-type') || ''
+
+    let responseData: any
+
+    if(contentType.includes('application/json')) {
+        responseData = await response.json()
+    } else {
+        responseData = await response.text()
+    }
     
     if(!response.ok){                   // standard JavaScript fetch() promise only rejects on true network failures or blocked requests (e.g., DNS lookup failures or CORS issues). It does not reject if the server responds with an error code like a 404 Not Found or 500 Internal Server Error. You must use response.ok to handle these server-side errors manually
-        throw new Error(
-            jsonResponse.error ||
-            jsonResponse.message ||
-            `HTTP response error; Status: ${response.status}`)
+        const errorMessage =
+            typeof responseData == 'string'
+            ? responseData
+            : responseData?.error ||
+            responseData?.message ||
+            responseData?.detail ||
+            `HTTP response error; Status: ${response.status}`
+
+        throw new Error(errorMessage)
     }
 
-    return jsonResponse
+    return responseData as T
 }
 
 export default apiRequest

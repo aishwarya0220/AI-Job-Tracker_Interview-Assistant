@@ -109,6 +109,10 @@ Day - 15 --
 Finished design of InterviewModal. Linked with interview-prep 'POST' and 'GET'
 
 
+Day - 16 --
+
+Completed Job Tracker and duplex AI communication model. Planned drag-and-drop kanban.
+
 
 
 Issues faced -- 
@@ -121,6 +125,8 @@ Git diverged & associated merge conflict (updates to readme.md) -
 
 CORS for accessing 'api/logout' bcoz options didnt match clearCookies() options - app.use(cors) placement 
 
+Format issue wherein response from AI was parsed into json format but parsing task was needed to be performed by the endpoint rather than the aiServices helper function.
+
 
 
 Decisions made --
@@ -129,4 +135,6 @@ Decisions made --
 localStorage vs httpOnly -> Picked httpOnly (XSS proof; configd to make CSRF proof)
 
 Token inflation -- Sliding window truncation vs Thread isolation. -> Picked Hybrid(more token efficient per se input and output)
+
+Kanban board connection with db using Next or Express? -> Express bcoz segregates things much clearly, reqd if app later modified into diverse components.
 

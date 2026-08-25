@@ -6,7 +6,7 @@ const router = express.Router()
 
 const Job = require('../models/job')
 
-const { generateInterviewQuestions } = require('../utils/aiService')
+const { generateInterviewQuestions, evaluateInterviewAnswer } = require('../utils/aiService')
 
 const jobs = router.post('/', authenticationToken, async (req, res) => {
     try{
@@ -133,20 +133,55 @@ const getSavedQuestions = router.get('/:id/interview-prep', authenticationToken,
     if(!job){
         return res.status(404).json('Job not found') 
     }
-
+    
+    
     const questions = job.interviewQuestions.map(item => ({
         question: item.question
     }))
     
-
     if(job.user.toString() == req.user.id){
         
         res.status(200).json(questions)
     }
 
+
     } catch(err) {
         res.status(500).json({error: err.message})
     }
+})
+
+const interviewDuplexComm = router.post('/:id/interview-feedback', authenticationToken, async (req, res) => {
+    try{
+        const job = await Job.findById(req.params.id)
+
+        if(!job){
+            return res.status(404).json('Job not found') 
+        }
+
+        const { question, conversationHistory, userAnswer } = req.body
+
+        if(!question || !userAnswer){
+            return res.status(400).json({ error: 'Question and userAnswer are required.' })
+        }
+
+        const recentHistory = Array.isArray(conversationHistory)
+            ? conversationHistory.slice(-3)
+            : []
+
+        const feedback = await evaluateInterviewAnswer({
+            company: job.company,
+            position: job.position,
+            question,
+            recentHistory,
+            userAnswer
+        })
+
+        return res.status(200).json({ feedback })    
+    } catch (err) {
+        console.error('Error getting interview feedback:', err);
+        return res.status(500).json({ error: err.message });
+    }
+
 })
 
 module.exports = jobs

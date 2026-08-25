@@ -84,7 +84,9 @@ export default function Dashboard(){
             <div>
                 <h1 className="ml-4 text-2xl text-amber-100">Your Applications</h1>
             </div>
-
+            <Button className="ml-4 text-2xl bg-blue-900 border-amber-100 text-amber-100" type="button" onClick={() => router.push('/kanban')}>
+                Task Tracker
+            </Button>
             <div className="gap-3 mr-4 flex justify-end">
             <div>
             <Avatar>

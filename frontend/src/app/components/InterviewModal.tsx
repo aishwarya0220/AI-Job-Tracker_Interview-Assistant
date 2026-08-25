@@ -114,17 +114,17 @@ export default function interviewModal({job, onClose}: InterviewModalProps){
         setLoading(true)
 
         try{
-            const res = await apiRequest(`http://localhost:8000/${job._id}/interview-feedback`, 'POST',
+            const res = await apiRequest(`http://localhost:8000/jobs/${job._id}/interview-feedback`, 'POST',
                 {
                     question: currentThread.question,
-                    conversationalHistory: updatedHistory,
+                    conversationHistory: updatedHistory,
                     userAnswer: textToSend
                 }
             )
 
             updatedThreads[activeThreadIndex].history.push({
                 role: 'assistant',
-                text: res.feedback          // api configurations
+                text: res.feedback          
                 })
 
             setThreads(updatedThreads)

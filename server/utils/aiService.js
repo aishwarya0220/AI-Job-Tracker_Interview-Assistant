@@ -65,4 +65,46 @@ async function generateInterviewQuestions(
     return JSON.parse(response.text)
 }
 
-module.exports = { generateInterviewQuestions }
+async function evaluateInterviewAnswer({
+    company,
+    position,
+    question,
+    recentHistory,
+    userAnswer
+}){
+    const formattedHistory = recentHistory && recentHistory.length > 0 
+        ? recentHistory.map((m) => `${m.role.toUpperCase()}: ${m.text}`).join('\n')
+        : 'No previous messages'
+
+    const prompt = `
+    You're a tech interviewer for ${position} role at ${company}.
+    
+    Target Question: "${question}"
+    
+    Thread Context:
+    ${formattedHistory}
+    
+    Candidate's Latest Answer: "${userAnswer}"
+    
+    INSTRUCTIONS:
+    1. Provide 1 brief sentence evaluating their answer (highlight strengths or missing technical concept).
+    2. Ask 1 relevant technical counter-question to dive deeper.
+    3. STRICT LIMIT: Keep total output under 50 words.
+    4. Dont include greetings/fluff/introductory pleasantries.
+        `.trim()
+
+    const response = await AI.models.generateContent({
+        model: 'gemini-3.1-flash-lite',
+        contents: prompt,
+        config: {
+            temperature: 0.5
+        }
+    })
+    
+    return response.text
+}
+
+module.exports = {
+    generateInterviewQuestions,
+    evaluateInterviewAnswer
+}
