@@ -114,6 +114,10 @@ Day - 16 --
 Completed Job Tracker and duplex AI communication model. Planned drag-and-drop kanban.
 
 
+Day - 17 -- 
+
+Built Column, TaskCard and Kanban board frontend. Studied pangea dnd and understood workflow behind drag and drop operations
+
 
 Issues faced -- 
 
@@ -136,5 +140,5 @@ localStorage vs httpOnly -> Picked httpOnly (XSS proof; configd to make CSRF pro
 
 Token inflation -- Sliding window truncation vs Thread isolation. -> Picked Hybrid(more token efficient per se input and output)
 
-Kanban board connection with db using Next or Express? -> Express bcoz segregates things much clearly, reqd if app later modified into diverse components.
+Kanban board connection with db using Next or Express? -> Express bcoz segregates things much clearly, optimal if app later developed further.
 
