@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { ITask, TaskStatus, ColumnDefinition } from '@/types/task';
 import { KanbanColumn } from '@/components/kanban/KanbanColumn';
+import apiRequest from '@/utils/api';
+import { TaskModal } from './kanbanModal';
 
 interface KanbanBoardProps {
   initialTasks: ITask[];
@@ -19,8 +21,38 @@ const COLUMNS: ColumnDefinition[] = [
 ];
 
 export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoardProps) {
-    const [tasks, setTasks] = useState<ITask[]>(initialTasks);
+    const [tasks, setTasks] = useState<ITask[]>(initialTasks ?? []);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [editingTask, setEditingTask] = useState<ITask | null>(null);
+
+    const [defaultStatus, setDefaultStatus] = useState<TaskStatus>('backlog')
+
+    const handleOpenEditModal = (task: ITask) => {
+      setEditingTask(task);
+      setIsModalOpen(true);
+    };
+
+    // Open modal for CREATING a new task
+    const handleOpenCreateModal = (status: TaskStatus = 'backlog') => {
+      setEditingTask(null);
+      setDefaultStatus(status);
+      setIsModalOpen(true);
+    }
   
+    const handleSaveTask = async (taskData: Partial<ITask>) => {
+      if (taskData._id) {
+
+        const updated = await apiRequest<ITask>(`http://localhost:8000/tasks/${taskData._id}`, 'PUT', taskData);
+        setTasks(tasks.map((t) => (t._id === updated._id ? updated : t)));
+      } else {
+        
+        const created = await apiRequest<ITask>('http://localhost:8000/tasks', 'POST', taskData);
+        setTasks([...tasks, created]);
+      }
+    };
+
     // Group tasks by their current status column and sort by position
     const getTasksByStatus = (status: TaskStatus) => {
       return tasks
@@ -108,21 +140,46 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
         setTasks(initialTasks);
       }
     }
-  };
+  }
 
   return (
-    <div className="w-full h-full p-4 overflow-x-auto">
+    <div className="w-full h-full flex flex-col p-4 overflow-x-auto">
+      {/* Top Action Bar */}
+      <div className="flex justify-between items-center mb-4 px-1">
+        <span className="text-xs text-slate-400">
+          Total Tasks: <strong className="text-slate-200">{tasks.length}</strong>
+        </span>
+        <button
+          onClick={() => handleOpenCreateModal('backlog')}
+          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-md transition"
+        >
+          + Add Task
+        </button>
+      </div>
+
+      {/* Board Columns */}
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-4 items-start min-w-max">
+        <div className="flex gap-4 items-start min-w-max flex-1">
           {COLUMNS.map((col) => (
             <KanbanColumn
               key={col.id}
               column={col}
               tasks={getTasksByStatus(col.id)}
+              onTaskClick={handleOpenEditModal}
+              onAddTask={() => handleOpenCreateModal(col.id)}
             />
           ))}
         </div>
       </DragDropContext>
+
+      {/* Task Modal Integration */}
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveTask}
+        initialTask={editingTask}
+        defaultStatus={defaultStatus}
+      />
     </div>
   );
 }

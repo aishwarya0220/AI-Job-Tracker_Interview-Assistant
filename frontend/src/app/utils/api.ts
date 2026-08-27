@@ -1,11 +1,14 @@
 
 
-const apiRequest = async <T>(url: string, method = 'GET', data = null):Promise<T> => {
+const apiRequest = async <T>(url: string, method = 'GET', data = null, headers: Record<string, string> = {}):Promise<T> => {
     
     const options: RequestInit = {
         method: method.toUpperCase(),
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json'}
+        headers: { 
+            'Content-Type': 'application/json',
+            ...headers
+        }
     }
 
     if(data !== null && method.toUpperCase() !== 'GET'){

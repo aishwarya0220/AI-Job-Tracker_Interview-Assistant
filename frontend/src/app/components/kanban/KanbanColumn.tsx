@@ -8,11 +8,13 @@ import { TaskCard } from './TaskCard';
 interface KanbanColumnProps {
   column: ColumnDefinition;
   tasks: ITask[];
+  onTaskClick?: (task: ITask) => void
+  onAddTask?: () => void
 }
 
-export const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, tasks }) => {
+export const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, tasks, onAddTask, onTaskClick }) => {
   return (
-    <div className="flex flex-col w-72 min-w-[280px] bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 h-[78vh]">
+    <div className="flex flex-col w-72 min-w-70 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 h-[78vh]">
       {/* Column Header */}
       <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80 px-1">
         <div className="flex items-center gap-2">
@@ -36,7 +38,9 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, tasks }) => 
             }`}
           >
             {tasks.map((task, index) => (
-              <TaskCard key={task._id} task={task} index={index} />
+              <div key={task._id} onClick={() => onTaskClick?.(task)}>
+                <TaskCard task={task} index={index} />
+              </div>
             ))}
             {provided.placeholder}
           </div>

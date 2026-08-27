@@ -20,6 +20,8 @@ const cookieParser = require('cookie-parser')
 
 const userRoutes = require('./server/routes/user')
 
+const router = require('./server/routes/tasks')
+
 mongoose.connect("mongodb://127.0.0.1:27017/mydatabase")
     .then(() => console.log("Connected"))
     .catch(err => console.log(err))
@@ -46,6 +48,8 @@ app.use('/jobs', jobsRouter)
 app.use('/user', userRoutes)
 
 app.use('/logout', logOut)
+
+app.use('/tasks', router)
 
 app.listen(
     PORT,

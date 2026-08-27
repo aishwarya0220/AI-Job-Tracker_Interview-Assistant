@@ -119,6 +119,13 @@ Day - 17 --
 Built Column, TaskCard and Kanban board frontend. Studied pangea dnd and understood workflow behind drag and drop operations
 
 
+Day - 18 -- 
+
+Completed Kanban board. few issues pending regarding onTaskCLick. dnd working properly.
+Learnt client and server components. child vs parent 
+
+
+
 Issues faced -- 
 
 localStorage to cookie based transitioning and reconfig of endpoints.
