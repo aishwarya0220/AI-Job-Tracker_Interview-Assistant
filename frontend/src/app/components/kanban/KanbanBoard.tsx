@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { ITask, TaskStatus, ColumnDefinition } from '@/types/task';
 import { KanbanColumn } from '@/components/kanban/KanbanColumn';
@@ -25,9 +25,29 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const [editingTask, setEditingTask] = useState<ITask | null>(null);
 
     const [defaultStatus, setDefaultStatus] = useState<TaskStatus>('backlog')
+
+    // 1. Fetch latest task list from DB via GET request
+  const fetchTasks = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await apiRequest<ITask[]>('http://localhost:8000/tasks', 'GET');
+      setTasks(data);
+    } catch (err) {
+      console.error('Failed to fetch tasks from database:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [])
+
+    // Fetch from backend on initial mount
+    useEffect(() => {
+      fetchTasks();
+    }, [fetchTasks])
 
     const handleOpenEditModal = (task: ITask) => {
       setEditingTask(task);
@@ -40,18 +60,26 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
       setDefaultStatus(status);
       setIsModalOpen(true);
     }
+
+    const handleDeleteTask = async () => {
+      // Triggers React re-render by creating a new array without the deleted task
+      await fetchTasks()
+    }
   
     const handleSaveTask = async (taskData: Partial<ITask>) => {
-      if (taskData._id) {
+      try{
+          if (taskData._id) {
 
-        const updated = await apiRequest<ITask>(`http://localhost:8000/tasks/${taskData._id}`, 'PUT', taskData);
-        setTasks(tasks.map((t) => (t._id === updated._id ? updated : t)));
-      } else {
-        
-        const created = await apiRequest<ITask>('http://localhost:8000/tasks', 'POST', taskData);
-        setTasks([...tasks, created]);
+            await apiRequest<ITask>(`http://localhost:8000/tasks/${taskData._id}`, 'PUT', taskData);
+          } else {
+            
+            const created = await apiRequest<ITask>('http://localhost:8000/tasks', 'POST', taskData);
+          }
+          await fetchTasks()
+        } catch (err) {
+          console.error('Failed to save task:', err);
+        }
       }
-    };
 
     // Group tasks by their current status column and sort by position
     const getTasksByStatus = (status: TaskStatus) => {
@@ -137,7 +165,7 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
       } catch (err) {
         console.error('Failed to sync reordered positions to server:', err);
         // Rollback state on error
-        setTasks(initialTasks);
+        await fetchTasks()
       }
     }
   }
@@ -167,6 +195,7 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
               tasks={getTasksByStatus(col.id)}
               onTaskClick={handleOpenEditModal}
               onAddTask={() => handleOpenCreateModal(col.id)}
+              onTaskDelete={handleDeleteTask}
             />
           ))}
         </div>

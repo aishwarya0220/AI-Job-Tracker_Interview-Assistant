@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { ITask } from '@/types/task';
+import apiRequest from '@/utils/api';
 
 interface TaskCardProps {
   task: ITask;
   index: number;
+  onDelete?: (taskId: string) => void
 }
 
 const categoryStyles: Record<string, string> = {
@@ -23,7 +25,28 @@ const difficultyStyles: Record<string, string> = {
     Hard: 'text-rose-400 bg-rose-950/40 border-rose-800/40',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onDelete }) => {
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    const handleDelete = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+
+        if(!confirm(`Are you sure you want to delete ${task.title} task?`)) return
+
+        setIsDeleting(true)
+        try{
+            await apiRequest(`http://localhost:8000/tasks/${task._id}`, 'DELETE')
+            if(onDelete){
+                onDelete(task._id)  
+            }
+         
+        }catch(err){
+            console.log('Failed to delete job', err)
+        }finally{
+            setIsDeleting(false)
+        }
+    }
+
     return (
         <Draggable draggableId={task._id} index={index}>
             {(provided, snapshot) => (
@@ -35,10 +58,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
                         snapshot.isDragging
                           ? 'border-blue-500 shadow-blue-500/10 shadow-2xl scale-[1.02] rotate-1 z-50'
                           : 'border-slate-800 hover:border-slate-700'
-                      }`}
+                      } ${isDeleting ? 'opacity-50 pointer-events-none' : ''}`}
                     >
 
                         <div className="flex items-center justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-2">
                             <span
                             className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border ${
                                 categoryStyles[task.category] || 'bg-slate-800 text-slate-300'
@@ -53,6 +77,18 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
                             </span>
                             )}
                         </div>
+
+                        {/* Direct Delete Button */}
+                        <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        title="Delete Task"
+                        className="px-1.5 py-0.5 text-xs font-bold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-600 border border-rose-500/20 rounded-md transition-colors"
+                        >
+                        {isDeleting ? '...' : '✕'}
+                        </button>
+                    </div>
 
                         {/* Title */}
                         <h4 className="text-xs font-semibold text-slate-100 leading-snug mb-1">

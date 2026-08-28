@@ -125,6 +125,11 @@ Completed Kanban board. few issues pending regarding onTaskCLick. dnd working pr
 Learnt client and server components. child vs parent 
 
 
+Day - 19 --
+
+Entire project is fully functional.
+
+
 
 Issues faced -- 
 
@@ -137,6 +142,8 @@ Git diverged & associated merge conflict (updates to readme.md) -
 CORS for accessing 'api/logout' bcoz options didnt match clearCookies() options - app.use(cors) placement 
 
 Format issue wherein response from AI was parsed into json format but parsing task was needed to be performed by the endpoint rather than the aiServices helper function.
+
+Client vs server boundary conflicts
 
 
 
