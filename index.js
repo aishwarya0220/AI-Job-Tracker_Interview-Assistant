@@ -20,9 +20,11 @@ const cookieParser = require('cookie-parser')
 
 const userRoutes = require('./server/routes/user')
 
+require('dotenv').config()
+
 const router = require('./server/routes/tasks')
 
-mongoose.connect("mongodb://127.0.0.1:27017/mydatabase")
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log("Connected"))
     .catch(err => console.log(err))
 
