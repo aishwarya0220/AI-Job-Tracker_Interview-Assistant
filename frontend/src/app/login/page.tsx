@@ -1,104 +1,84 @@
 'use client'
 
-import Image from "next/image"
-
-import registerImg from "@/Register-photo.png"
-
-import { Button } from "@/components/ui/button"
-
-import { Input } from "@/components/ui/input"
-
+import { useState, type SubmitEvent } from "react"
 import Link from "next/link"
-
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import AuthShell from "@/components/AuthShell"
+import { Spinner } from "@/components/icons"
+import apiRequest from "@/utils/api"
 
-import { useState } from "react"
-
-import apiRequest from "../utils/api"
-
-export default function LoginPage(){
-
+export default function LoginPage() {
     const router = useRouter()
 
     const [login, setLogin] = useState("")
-
     const [password, setPassword] = useState("")
+    const [error, setError] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: SubmitEvent) => {
         event.preventDefault()
+        setError(null)
 
-        const data = {
-            login: login,
-            password: password
+        if (!login.trim() || !password) {
+            setError('Please enter your username or email and your password.')
+            return
         }
 
-        const response = await apiRequest(
-            'http://localhost:8000/login',
-            'POST',
-            data
-        )
-        
-        router.push('/dashboard')
-        console.log(response)
+        setLoading(true)
+
+        try {
+            await apiRequest('/login', 'POST', { login: login.trim(), password })
+            router.push('/dashboard')
+        } catch (err: any) {
+            setError(err.message || 'Login failed. Please try again.')
+            setLoading(false)
+        }
     }
 
     return (
-        <form 
-            onSubmit={handleSubmit}>
-           {/* main container */}
-            <div className="flex h-screen overflow-hidden w-full" >      
-                {/* left container */}
-                <div className="flex h-screen flex-col items-baseline justify-center w-1/2 ml-43.75 gap-7.5">
-                    <h1 className="mb-10 text-[24px]">Sign in</h1>
-                    {/* Username */}
-                    <div className="w-101"
-                    
-                    >
-                    <p className="ml-2 text-[14px]">Login ID</p>
+        <AuthShell title="Welcome back" subtitle="Sign in to manage your applications.">
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                {error && (
+                    <div role="alert" className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-300">
+                        {error}
+                    </div>
+                )}
+
+                <div className="space-y-1.5">
+                    <label htmlFor="login" className="text-sm font-medium text-slate-300">Username or email</label>
                     <Input
-                        className="w-full"
+                        id="login"
                         type="text"
-                        placeholder="Enter Username or Email"
-                        onChange={(event) => {
-                            setLogin(event.target.value)
-                        }}
+                        autoComplete="username"
+                        placeholder="you@example.com"
+                        value={login}
+                        onChange={(e) => setLogin(e.target.value)}
                     />
-                    </div>
-                        {/* email */}
-                    <div className="w-101"
-                    
-                    >
-                    <p className="ml-2 text-[14px]">Password</p>
+                </div>
+
+                <div className="space-y-1.5">
+                    <label htmlFor="password" className="text-sm font-medium text-slate-300">Password</label>
                     <Input
-                        className="w-full"
+                        id="password"
                         type="password"
-                        placeholder="Enter Password"
-                        onChange={(event) => {
-                            setPassword(event.target.value)
-                        }}
+                        autoComplete="current-password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 md:flex-row">
-                        <Button type="submit" variant="outline" className="w-102 bg-green-800 transition-colors duration-300 ease-in-out hover:bg-green-900 hover:text-white text-amber-50 h-9">Login</Button>
-                    </div>
-
-                    <div className="flex justify-center items-center align-middle">
-                        <p>Don't have an account? <Link href="/" className="text-blue-600">Sign up</Link></p>
-                    </div>
                 </div>
-                    {/* right container */}
-                <div className="h-screen relative w-1/2">
-                        <Image
-                            src={registerImg}
-                            className="object-cover"
-                            alt="scenery"
-                            fill
-                        />
-                </div>
-           </div>
-           </form>
-           
+
+                <Button type="submit" disabled={loading} className="h-10 w-full">
+                    {loading ? <><Spinner /> Signing in...</> : 'Sign in'}
+                </Button>
+
+                <p className="text-center text-sm text-slate-400">
+                    Don&apos;t have an account?{' '}
+                    <Link href="/" className="font-medium text-blue-400 hover:underline">Sign up</Link>
+                </p>
+            </form>
+        </AuthShell>
     )
-    
 }

@@ -2,7 +2,9 @@ import { Job } from "@/types"
 
 import apiRequest from "@/utils/api"
 
-import { useState, SubmitEvent } from "react"
+import { useState, type SubmitEvent } from "react"
+
+import { XIcon } from "@/components/icons"
 
 interface AddJobModalProps {
     onClose: () => void
@@ -30,15 +32,15 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
         setLoading(true)
 
         try{
-            await apiRequest('http://localhost:8000/jobs', 'POST', {
-                company,
-                position,
+            await apiRequest('/jobs', 'POST', {
+                company: company.trim(),
+                position: position.trim(),
                 status,
                 jobDescription
             })
             onJobAdded()
         } catch(err){
-            setError(err.message || 'Failed to add job application.')
+            setError(err instanceof Error ? err.message : 'Failed to add job application.')
         } finally{
             setLoading(false)
         }
@@ -46,17 +48,19 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
 
     return (
         <div className="z-50 fixed inset-0 bg-slate-950/80 p-4 backdrop-blur-sm flex items-center justify-center">
-            <div className="relative max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
+            <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h2>Add New Job Applications</h2>
+                        <h2 className="text-lg font-semibold text-slate-100">Add job application</h2>
                     </div>
-                    <button 
-                        className="text-slate-200 hover:text-slate-400 p-1.5 rounded-lg border border-slate-800 hover:bg-slate-800 transition text-sm"
+                    <button
+                        type="button"
+                        aria-label="Close"
+                        className="text-slate-300 hover:text-white p-1.5 rounded-lg border border-slate-800 hover:bg-slate-800 transition"
                         onClick={onClose}
                     >
-                        ✕
+                        <XIcon />
                     </button>
                 </div>
 
@@ -70,7 +74,7 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                    <label className="block text-xs font-semibold uppercase mb-1 text-slate-400 ">
+                    <label className="block text-xs font-medium mb-1 text-slate-400">
                         Company name
                     </label>
                     <input
@@ -83,7 +87,7 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
                     </div>
 
                     <div>
-                    <label className="block text-xs font-semibold uppercase mb-1 text-slate-400 ">
+                    <label className="block text-xs font-medium mb-1 text-slate-400">
                         Position title
                     </label>
                     <input
@@ -96,7 +100,7 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
                     </div>
 
                     <div>
-                    <label className="block text-xs font-semibold uppercase mb-1 text-slate-400 ">
+                    <label className="block text-xs font-medium mb-1 text-slate-400">
                         Status
                     </label>
                     <select
@@ -112,11 +116,12 @@ export default function AddJobModal({onClose, onJobAdded}: AddJobModalProps){
                     </div>
 
                     <div>
-                    <label className="block text-xs font-semibold uppercase mb-1 text-slate-400 ">
+                    <label className="block text-xs font-medium mb-1 text-slate-400">
                         Job Description
                     </label>
                     <textarea
                         rows={4}
+                        placeholder="Paste the job description to get tailored interview questions"
                         value={jobDescription}
                         className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                         onChange={(e) => setJobDescription(e.target.value)}

@@ -15,10 +15,16 @@ const login = router.post('/', async (req, res) => {
     try {
     const { login, password } = req.body
 
+    if(!login || !password){
+        return res.status(400).json({
+            message: 'Please enter your username or email and password'
+        })
+    }
+
     const user = await User.findOne({
         $or: [
-            {email: login},
-            {username: login}
+            {email: login.trim().toLowerCase()},
+            {username: login.trim()}
         ]
     })
 
@@ -48,9 +54,9 @@ const login = router.post('/', async (req, res) => {
     )
     res.cookie('token', token,{
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         path: '/',
-        // sameSite: 'lax',
+        sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
 

@@ -15,7 +15,7 @@ interface KanbanColumnProps {
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, tasks, onAddTask, onTaskClick, onTaskDelete }) => {
   return (
-    <div className="flex flex-col w-72 min-w-70 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 h-[78vh]">
+    <div className="flex flex-col w-72 min-w-70 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 h-[calc(100vh-17rem)] min-h-96">
       {/* Column Header */}
       <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80 px-1">
         <div className="flex items-center gap-2">

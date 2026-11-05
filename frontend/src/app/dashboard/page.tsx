@@ -1,172 +1,144 @@
 'use client'
 
-import { useEffect, useState } from "react"
-
-import { Job } from "@/types"
-
-import AddJobModal from "@/components/jobModal"
-
-import JobCard from "@/components/JobCard"
-
-import InterviewModal from "@/components/InterviewModal"
-
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-  } from "@/components/ui/avatar"
-
-import apiRequest from "@/utils/api"
-
-import { Button } from "@/components/ui/button"
-
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { Job } from "@/types"
+import Navbar from "@/components/Navbar"
+import AddJobModal from "@/components/JobModal"
+import JobCard from "@/components/JobCard"
+import InterviewModal from "@/components/InterviewModal"
+import { PlusIcon } from "@/components/icons"
+import apiRequest, { ApiError } from "@/utils/api"
 
-export default function Dashboard(){
+const stats: { status: Job['status'] | 'All', dot: string }[] = [
+    { status: 'All', dot: 'bg-slate-400' },
+    { status: 'Applied', dot: 'bg-blue-400' },
+    { status: 'Interviewing', dot: 'bg-amber-400' },
+    { status: 'Offered', dot: 'bg-emerald-400' },
+    { status: 'Rejected', dot: 'bg-rose-400' },
+]
 
+export default function Dashboard() {
     const router = useRouter()
 
     const [jobs, setJobs] = useState<Job[]>([])
-
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-
     const [loading, setLoading] = useState(true)
-
+    const [error, setError] = useState<string | null>(null)
     const [selectedJobForInterview, setSelectedJobForInterview] = useState<Job | null>(null)
 
-    useEffect(() => {
-        fetchJobs()
-    },[])
-
-    const fetchJobs = async () => {
-        try{
-            setLoading(true)
-            console.log('fetching jobs..')
-            const data = await apiRequest<Job[]>('http://localhost:8000/jobs')
-            console.log('jobs received', data)
+    const fetchJobs = useCallback(async () => {
+        try {
+            setError(null)
+            const data = await apiRequest<Job[]>('/jobs')
             setJobs(data)
-        } catch(err){
-            console.error('Failed to fetch jobs', err)
+        } catch (err) {
+            if (err instanceof ApiError && err.status === 401) {
+                router.replace('/login')
+                return
+            }
+            setError(err instanceof Error ? err.message : 'Failed to load applications.')
         } finally {
             setLoading(false)
         }
-    }
-
-    const handleLogout = async () => {
-        try{
-            await apiRequest('http://localhost:8000/logout', 'POST')
-
-            router.push('/login')
-        } catch(err){
-            console.error('Logout failed', err)
-        }
-    }
-
-    const [username, setUsername] = useState('')
+    }, [router])
 
     useEffect(() => {
+        fetchJobs()
+    }, [fetchJobs])
 
-        const getUser = async () => {
+    const countFor = (status: Job['status'] | 'All') =>
+        status === 'All' ? jobs.length : jobs.filter((j) => j.status === status).length
 
-            try{
-                const data = await apiRequest('http://localhost:8000/user/me')
-                setUsername(data.username)
-            } catch(err){
-                console.log('Failed to get user')
-            }
-        }
-        getUser()
-
-    },[])
     return (
         <div className="min-h-screen">
-        <nav className="justify-between flex bg-blue-950 h-11 items-center">
-            <div>
-                <h1 className="ml-4 text-2xl text-amber-100">Your Applications</h1>
-            </div>
-            <Button className="ml-4 text-2xl bg-blue-900 border-amber-100 text-amber-100" type="button" onClick={() => router.push('/kanban')}>
-                Task Tracker
-            </Button>
-            <div className="gap-3 mr-4 flex justify-end">
-            <div>
-            <Avatar>
-            <AvatarImage
-                src="https://github.com/shadcn.png"
-                alt="user-svg-img"
-                className="grayscale"
-            />
-            <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            </div>
+            <Navbar />
 
-            <p className="text-[19px] text-amber-100">{username}</p>
-
-            <div>
-                <Button type="button" className="bg-blue-900 border-amber-100 " onClick={handleLogout}>Logout</Button>
-            </div>
-            </div>
-
-
-        </nav>
-
-        {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h2 className="text-2xl font-bold">Track status and generate interview questions</h2>
-          </div>
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold rounded-lg shadow-lg shadow-blue-600/20 transition text-sm"
-          >
-            + Add New Job
-          </button>
-        </div>
-
-            {/* Loading / Empty States */}
-        {loading ? (
-                <div className="text-center py-20 text-slate-500">Loading your applications...</div>
-                ) : jobs.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800">
-                    <p className="text-slate-400 mb-4">No jobs added yet.</p>
+            <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-100">Your applications</h1>
+                        <p className="mt-1 text-sm text-slate-400">
+                            Track status and practice with AI-generated interview questions.
+                        </p>
+                    </div>
                     <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="text-blue-400 hover:underline font-semibold text-sm"
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500"
                     >
-                    Add your first job application
+                        <PlusIcon /> Add job
                     </button>
                 </div>
-                ) : (
-                /* Job Grid */
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {jobs.map((job) => (
-                    <JobCard key={job._id}
-                        job={job} 
-                        onJobUpdated={fetchJobs} 
-                        onPrepareForInterview={() => setSelectedJobForInterview(job)}
-                    />
-                    ))}
-                </div>
+
+                {/* Summary counts */}
+                {jobs.length > 0 && (
+                    <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-5">
+                        {stats.map(({ status, dot }) => (
+                            <div key={status} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+                                <div className="flex items-center gap-2 text-xs text-slate-400">
+                                    <span className={`h-2 w-2 rounded-full ${dot}`} />
+                                    {status === 'All' ? 'Total' : status}
+                                </div>
+                                <p className="mt-1 text-2xl font-bold text-slate-100">{countFor(status)}</p>
+                            </div>
+                        ))}
+                    </div>
                 )}
 
-                {selectedJobForInterview && (
-                    <InterviewModal
-                        job={selectedJobForInterview}
-                        onClose={() => setSelectedJobForInterview(null)}
-                    />
+                {error && (
+                    <div role="alert" className="mb-6 flex items-center justify-between rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-300">
+                        <span>{error}</span>
+                        <button onClick={fetchJobs} className="font-semibold underline">Retry</button>
+                    </div>
+                )}
+
+                {loading ? (
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {[0, 1, 2].map((i) => (
+                            <div key={i} className="h-44 animate-pulse rounded-xl border border-slate-800 bg-slate-900" />
+                        ))}
+                    </div>
+                ) : jobs.length === 0 && !error ? (
+                    <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 py-20 text-center">
+                        <p className="mb-1 font-medium text-slate-200">No applications yet</p>
+                        <p className="mb-5 text-sm text-slate-400">Add a job to start tracking and generate interview questions.</p>
+                        <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500"
+                        >
+                            Add your first job
+                        </button>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {jobs.map((job) => (
+                            <JobCard
+                                key={job._id}
+                                job={job}
+                                onJobUpdated={fetchJobs}
+                                onPrepareForInterview={() => setSelectedJobForInterview(job)}
+                            />
+                        ))}
+                    </div>
                 )}
             </main>
 
-            {/* Add Job Modal */}
+            {selectedJobForInterview && (
+                <InterviewModal
+                    job={selectedJobForInterview}
+                    onClose={() => setSelectedJobForInterview(null)}
+                />
+            )}
+
             {isAddModalOpen && (
                 <AddJobModal
-                onClose={() => setIsAddModalOpen(false)}
-                onJobAdded={() => {
-                    setIsAddModalOpen(false);
-                    fetchJobs();
-                }}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onJobAdded={() => {
+                        setIsAddModalOpen(false)
+                        fetchJobs()
+                    }}
                 />
-            )} 
-            </div>
-        );
-        }
+            )}
+        </div>
+    )
+}

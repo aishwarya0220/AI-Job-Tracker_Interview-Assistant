@@ -4,13 +4,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { ITask, TaskStatus, ColumnDefinition } from '@/types/task';
 import { KanbanColumn } from '@/components/kanban/KanbanColumn';
-import apiRequest from '@/utils/api';
+import apiRequest, { ApiError } from '@/utils/api';
+import { useRouter } from 'next/navigation';
 import { TaskModal } from './kanbanModal';
 
-interface KanbanBoardProps {
-  initialTasks: ITask[];
-  onReorderSave?: (updatedTasks: { _id: string; status: TaskStatus; position: number }[]) => Promise<void>;
-}
 
 const COLUMNS: ColumnDefinition[] = [
   { id: 'backlog', title: 'Backlog', accentColor: 'bg-slate-500' },
@@ -20,8 +17,12 @@ const COLUMNS: ColumnDefinition[] = [
   { id: 'completed', title: 'Completed', accentColor: 'bg-emerald-500' },
 ];
 
-export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoardProps) {
-    const [tasks, setTasks] = useState<ITask[]>(initialTasks ?? []);
+export default function KanbanBoard() {
+    const router = useRouter();
+
+    const [tasks, setTasks] = useState<ITask[]>([]);
+
+    const [error, setError] = useState<string | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -35,14 +36,19 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
   const fetchTasks = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await apiRequest<ITask[]>('http://localhost:8000/tasks', 'GET');
+      setError(null);
+      const data = await apiRequest<ITask[]>('/tasks', 'GET');
       setTasks(data);
     } catch (err) {
-      console.error('Failed to fetch tasks from database:', err);
+      if (err instanceof ApiError && err.status === 401) {
+        router.replace('/login');
+        return;
+      }
+      setError(err instanceof Error ? err.message : 'Failed to load tasks.');
     } finally {
       setIsLoading(false);
     }
-  }, [])
+  }, [router])
 
     // Fetch from backend on initial mount
     useEffect(() => {
@@ -70,10 +76,10 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
       try{
           if (taskData._id) {
 
-            await apiRequest<ITask>(`http://localhost:8000/tasks/${taskData._id}`, 'PUT', taskData);
+            await apiRequest<ITask>(`/tasks/${taskData._id}`, 'PUT', taskData);
           } else {
             
-            const created = await apiRequest<ITask>('http://localhost:8000/tasks', 'POST', taskData);
+            const created = await apiRequest<ITask>('/tasks', 'POST', taskData);
           }
           await fetchTasks()
         } catch (err) {
@@ -159,14 +165,12 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
         setTasks(finalState);
 
     // 8. Background Sync API Call
-    if (onReorderSave) {
-      try {
-        await onReorderSave(reorderedPayload);
-      } catch (err) {
-        console.error('Failed to sync reordered positions to server:', err);
-        // Rollback state on error
-        await fetchTasks()
-      }
+    try {
+      await apiRequest('/tasks/reorder', 'PATCH', { items: reorderedPayload });
+    } catch (err) {
+      console.error('Failed to sync reordered positions to server:', err);
+      // Rollback state on error
+      await fetchTasks()
     }
   }
 
@@ -181,9 +185,16 @@ export default function KanbanBoard({ initialTasks, onReorderSave }: KanbanBoard
           onClick={() => handleOpenCreateModal('backlog')}
           className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-md transition"
         >
-          + Add Task
+          + Add task
         </button>
       </div>
+
+      {error && (
+        <div role="alert" className="mb-4 flex items-center justify-between rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-300">
+          <span>{error}</span>
+          <button onClick={fetchTasks} className="font-semibold underline">Retry</button>
+        </div>
+      )}
 
       {/* Board Columns */}
       <DragDropContext onDragEnd={handleDragEnd}>

@@ -100,7 +100,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           {/* Header */}
           <div className="flex justify-between items-center p-5 border-b border-slate-800">
             <h3 className="text-base font-bold text-slate-100">
-              {initialTask ? '✏️ Edit Task' : '✨ Create New Task'}
+              {initialTask ? 'Edit task' : 'Create new task'}
             </h3>
             <button
               onClick={onClose}
@@ -212,7 +212,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           {category === 'leetcode' && (
             <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-3">
               <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">
-                🧩 LeetCode Details
+                LeetCode details
               </span>
 
               <div className="grid grid-cols-2 gap-3">

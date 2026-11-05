@@ -35,7 +35,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onDelete }) => 
 
         setIsDeleting(true)
         try{
-            await apiRequest(`http://localhost:8000/tasks/${task._id}`, 'DELETE')
+            await apiRequest(`/tasks/${task._id}`, 'DELETE')
             if(onDelete){
                 onDelete(task._id)  
             }
@@ -73,7 +73,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onDelete }) => 
 
                             {task.scheduledDate && (
                             <span className="text-[10px] text-slate-400 font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
-                                📅 {task.scheduledDate}
+                                {task.scheduledDate}
                             </span>
                             )}
                         </div>

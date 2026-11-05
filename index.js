@@ -12,7 +12,7 @@ const authenticationRouter = require('./server/routes/auth')
 
 const jobsRouter = require('./server/routes/jobs')
 
-const PORT = 8000
+const PORT = process.env.PORT || 8000
 
 const logOut = require('./server/routes/logout')
 
@@ -33,7 +33,7 @@ app.get('/',(req,res) => {
 })
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
     credentials: true
 }))
 
