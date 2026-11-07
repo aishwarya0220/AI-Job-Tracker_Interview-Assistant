@@ -1,6 +1,4 @@
-// Base URL of the Express API.
-// Local dev: falls back to http://localhost:8000
-// Production: set NEXT_PUBLIC_API_URL (see README)
+
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 // Error that also carries the HTTP status, so pages can react to 401s (expired login)

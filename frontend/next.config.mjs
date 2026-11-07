@@ -14,3 +14,6 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
+
+// jobcard jobmodal Import map: aliased to relative './src/app/components/JobModal' inside of [project]/frontend
