@@ -9,6 +9,12 @@ const authenticationToken = ((req, res, next) => {
     
     const token = req.cookies.token
 
+    console.log('Auth debug:', {
+        origin: req.headers.origin,
+        cookieReceived: !!req.cookies?.token,
+        userAgent: req.headers['user-agent']
+    })
+
     if(!token){
         return res.status(401).json({message: 'Access denied: No token provided'})
     }
