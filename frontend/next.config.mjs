@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: process.env.VERCEL ? undefined : 'standalone',
   reactCompiler: true,
 
   // Production: forward /api/* to the Express backend so the login cookie
