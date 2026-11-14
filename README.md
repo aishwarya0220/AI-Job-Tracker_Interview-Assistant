@@ -2,6 +2,10 @@
 
 A full-stack MERN app to track job applications, practise AI-generated mock interviews for each role, and plan your prep on a kanban task board.
 
+## Live link
+
+https://ai-job-tracker-interview-assistant.vercel.app/
+
 ## Features
 
 - **Authentication**: register / login with bcrypt-hashed passwords and JWT stored in an HTTP-only cookie
