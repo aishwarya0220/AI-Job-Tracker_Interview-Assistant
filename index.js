@@ -29,7 +29,13 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.log(err))
 
 app.get('/',(req,res) => {
-    res.send("This is the homepage")
+    res.send("Backend services started")
+})
+
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok'
+    })
 })
 
 app.use(cors({
