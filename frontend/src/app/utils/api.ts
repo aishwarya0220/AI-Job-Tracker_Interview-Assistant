@@ -12,6 +12,56 @@ export class ApiError extends Error {
     }
 }
 
+let serverAwake = false
+let wakePromise: Promise<boolean> | null = null
+
+const pollUntilAwake = async (maxWaitMs = 120000): Promise<boolean> => {
+    const start = Date.now()
+
+    while (Date.now() - start < maxWaitMs) {
+        const controller = new AbortController()
+        const timer = setTimeout(() => controller.abort(), 15000)
+
+        try {
+            const res = await fetch(`${API_URL}/user/me`, {
+                credentials: 'include',
+                cache: 'no-store',
+                signal: controller.signal
+            })
+            if ((res.headers.get('content-type') || '').includes('application/json')) return true
+        } catch {
+            // network error or timeout: server is still starting, try again
+        } finally {
+            clearTimeout(timer)
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+    }
+
+    return false
+}
+
+export const wakeServer = async (onWaiting?: () => void): Promise<boolean> => {
+    if (serverAwake) return true
+
+    if (!wakePromise) {
+        wakePromise = pollUntilAwake().then((ok) => {
+            serverAwake = ok
+            wakePromise = null
+            return ok
+        })
+    }
+
+    // Only tell the user if it takes more than a few seconds
+    const hint = onWaiting ? setTimeout(onWaiting, 3000) : null
+
+    try {
+        return await wakePromise
+    } finally {
+        if (hint) clearTimeout(hint)
+    }
+}
+
 const apiRequest = async <T>(
     url: string,
     method = 'GET',
@@ -25,8 +75,7 @@ const apiRequest = async <T>(
         headers: {
             'Content-Type': 'application/json',
             ...headers
-        },
-        signal: AbortSignal.timeout(90000)
+        }
     }
 
     if (data !== null && method.toUpperCase() !== 'GET') {

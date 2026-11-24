@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, type SubmitEvent } from "react"
+import { useState, useEffect type SubmitEvent } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import AuthShell from "@/components/AuthShell"
 import { Spinner } from "@/components/icons"
-import apiRequest from "@/utils/api"
+import apiRequest, { wakeServer } from "@/utils/api"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -16,7 +16,11 @@ export default function LoginPage() {
     const [password, setPassword] = useState("")
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-    const [slow, setSlow] = useState(false)
+    const [notice, setNotice] = useState<string | null>(null)
+
+    useEffect(() => {
+        wakeServer()
+    }, [])
 
     const handleSubmit = async (event: SubmitEvent) => {
         event.preventDefault()
@@ -29,7 +33,13 @@ export default function LoginPage() {
 
         setLoading(true)
 
-        const slowTimer = setTimeout(() => setSlow(true), 4000);
+        const awake = await wakeServer(() => setNotice('Waking up the server (free hosting). This can take up to a minute...'))
+
+        if(!awake){
+            setError('The server is taking too long to start. Please try again in a minute.')
+            setLoading(false)
+            return
+        }
 
         try {
             await apiRequest('/login', 'POST', { login: login.trim(), password })
@@ -73,15 +83,13 @@ export default function LoginPage() {
                     />
                 </div>
 
+                {notice && (
+                    <p role="status" className="text-center text-sm text-slate-400">{notice}</p>
+                )}
+
                 <Button type="submit" disabled={loading} className="h-10 w-full">
                     {loading ? <><Spinner /> Signing in...</> : 'Sign in'}
                 </Button>
-
-                {slow && (
-                    <p className="text-sm text-slate-400 text-center">
-                       The server was asleep and is waking up. This can take up to a minute on the first request.
-                    </p>
-                )}
 
                 <p className="text-center text-sm text-slate-400">
                     Don&apos;t have an account?{' '}
