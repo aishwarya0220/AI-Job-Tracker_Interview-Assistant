@@ -16,6 +16,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState("")
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const [slow, setSlow] = useState(false)
 
     const handleSubmit = async (event: SubmitEvent) => {
         event.preventDefault()
@@ -27,6 +28,8 @@ export default function LoginPage() {
         }
 
         setLoading(true)
+
+        const slowTimer = setTimeout(() => setSlow(true), 4000);
 
         try {
             await apiRequest('/login', 'POST', { login: login.trim(), password })
@@ -73,6 +76,12 @@ export default function LoginPage() {
                 <Button type="submit" disabled={loading} className="h-10 w-full">
                     {loading ? <><Spinner /> Signing in...</> : 'Sign in'}
                 </Button>
+
+                {slow && (
+                    <p className="text-sm text-slate-400 text-center">
+                       The server was asleep and is waking up. This can take up to a minute on the first request.
+                    </p>
+                )}
 
                 <p className="text-center text-sm text-slate-400">
                     Don&apos;t have an account?{' '}

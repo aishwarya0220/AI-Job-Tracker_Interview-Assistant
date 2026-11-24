@@ -6,8 +6,6 @@ const User = require('../models/user')
 
 const jwt = require('jsonwebtoken')
 
-const session = require('express-session')
-
 require('dotenv').config()
 
 const username = router.get('/me', async (req, res) => {
